@@ -18,18 +18,28 @@ btnSend = pygbutton.PygButton((10,10,width-20,100), 'Send Message', (100,100,100
 btnRead = pygbutton.PygButton((10,10 + 110,width-20,100), 'Read Messages', (100,100,100), (0,0,0), pygame.font.Font('freesansbold.ttf', 30))
 mainMenuButtons = (btnSend, btnRead)
 
+BLUE    = (  0,   0, 255)
+RED     = (255,   0,   0)
+GREEN   = (  0, 255,   0)
+CYAN    = (  0, 255, 255)
+YELLOW  = (255, 255,   0)
+PURPLE  = (255,   0, 255)
+BLACK   = (  0,   0,   0)
 
-btnColorBlue    = pygbutton.PygButton((10, 8       , 40, 40), '', (  0,   0, 255), (0,0,0))
-btnColorRed     = pygbutton.PygButton((10, 12 +  40, 40, 40), '', (255,   0,   0), (0,0,0))
-btnColorGreen   = pygbutton.PygButton((10, 16 +  80, 40, 40), '', (  0, 255,   0), (0,0,0))
-btnColorYellow  = pygbutton.PygButton((10, 20 + 120, 40, 40), '', (  0, 255, 255), (0,0,0))
-btnColorOrange  = pygbutton.PygButton((10, 24 + 160, 40, 40), '', (255, 255,   0), (0,0,0))
-btnColorPurple  = pygbutton.PygButton((10, 28 + 200, 40, 40), '', (255,   0, 255), (0,0,0))
-btnColorBlack   = pygbutton.PygButton((10, 32 + 240, 40, 40), '', (  0,   0,   0), (0,0,0))
-colorButtons    = (btnColorPurple, btnColorOrange, btnColorYellow, btnColorRed, btnColorGreen, btnColorBlue, btnColorBlack)
+drawColor = BLACK
+drawSelector = 6;
 
-btnClearDrawing = pygbutton.PygButton((60, 32 + 240, 40, 40), '', (60, 60, 60), (0,0,0))
-btnSendDrawing  = pygbutton.PygButton((60+50, 32 + 240, 40, 40), '', (60, 60, 60), (0,0,0))
+btnColorBlue    = pygbutton.PygButton((10, 8       , 40, 40), '', BLUE, (0,0,0))
+btnColorRed     = pygbutton.PygButton((10, 12 +  40, 40, 40), '', RED, (0,0,0))
+btnColorGreen   = pygbutton.PygButton((10, 16 +  80, 40, 40), '', GREEN, (0,0,0))
+btnColorCyan    = pygbutton.PygButton((10, 20 + 120, 40, 40), '', CYAN, (0,0,0))
+btnColorYellow  = pygbutton.PygButton((10, 24 + 160, 40, 40), '', YELLOW, (0,0,0))
+btnColorPurple  = pygbutton.PygButton((10, 28 + 200, 40, 40), '', PURPLE, (0,0,0))
+btnColorBlack   = pygbutton.PygButton((10, 32 + 240, 40, 40), '', BLACK, (0,0,0))
+colorButtons    = (btnColorPurple, btnColorYellow, btnColorCyan, btnColorRed, btnColorGreen, btnColorBlue, btnColorBlack)
+
+btnClearDrawing = pygbutton.PygButton((60, 32 + 240, 100, 40), 'Clear', (60, 60, 60), (0,0,0), pygame.font.Font('freesansbold.ttf', 20))
+btnSendDrawing  = pygbutton.PygButton((60 + 100 + 10, 32 + 240, 100, 40), 'Send', (60, 60, 60), (0,0,0), pygame.font.Font('freesansbold.ttf', 20))
 sendButtons     = (btnClearDrawing, btnSendDrawing)
 
 def MainMenu():
@@ -43,9 +53,10 @@ def SendMenu():
         b.draw(surface)
     if pygame.mouse.get_pressed()[0]:
 #        print pygame.mouse.get_pos(),  pygame.mouse.get_rel()
-        pygame.draw.line(drawCanvas, (0,0,0), map(operator.sub, map(operator.add, pygame.mouse.get_pos(), (-60,-10)), pygame.mouse.get_rel()), map(operator.add, pygame.mouse.get_pos(), (-60,-10)), 5)
+        pygame.draw.line(drawCanvas, drawColor, map(operator.sub, map(operator.add, pygame.mouse.get_pos(), (-60,-10)), pygame.mouse.get_rel()), map(operator.add, pygame.mouse.get_pos(), (-60,-10)), 5)
     else:
         pygame.mouse.get_rel()
+    pygame.draw.polygon(surface, (196, 196, 196), ((0, (drawSelector * 44) + 15), (20, (drawSelector * 44) + 28), (0, (drawSelector * 44) + 41)))
     surface.blit(drawCanvas, (60,10))
 
 def ReadMenu():
@@ -63,9 +74,27 @@ while 1:
         if view == 2: # Send
             if 'click' in btnClearDrawing.handleEvent(event):
                 drawCanvas.fill(canvasColor)
-            for b in colorButtons:
-                if 'click' in b.handleEvent(event):
-                    print b
+            if 'click' in btnColorBlue.handleEvent(event):
+                drawSelector = 0
+                drawColor = BLUE
+            if 'click' in btnColorRed.handleEvent(event):
+                drawSelector = 1
+                drawColor = RED
+            if 'click' in btnColorGreen.handleEvent(event):
+                drawSelector = 2
+                drawColor = GREEN
+            if 'click' in btnColorCyan.handleEvent(event):
+                drawSelector = 3
+                drawColor = CYAN
+            if 'click' in btnColorYellow.handleEvent(event):
+                drawSelector = 4
+                drawColor = YELLOW
+            if 'click' in btnColorPurple.handleEvent(event):
+                drawSelector = 5
+                drawColor = PURPLE
+            if 'click' in btnColorBlack.handleEvent(event):
+                drawSelector = 6
+                drawColor = BLACK
 
 
     surface.fill((30,30,30))
