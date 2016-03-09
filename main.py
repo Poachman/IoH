@@ -11,7 +11,7 @@ view = 1  #which screen we're at
 canvasColor = (255,255,255)
 
 surface     = pygame.display.set_mode(size)
-drawCanvas  = pygame.surface.Surface((410,255))
+drawCanvas  = pygame.surface.Surface((410,260))
 drawCanvas.fill(canvasColor)
 
 btnSend = pygbutton.PygButton((10,10,width-20,100), 'Send Message', (100,100,100), (0,0,0), pygame.font.Font('freesansbold.ttf', 30))
@@ -38,8 +38,9 @@ btnColorPurple  = pygbutton.PygButton((10, 28 + 200, 40, 40), '', PURPLE, (0,0,0
 btnColorBlack   = pygbutton.PygButton((10, 32 + 240, 40, 40), '', BLACK, (0,0,0))
 colorButtons    = (btnColorPurple, btnColorYellow, btnColorCyan, btnColorRed, btnColorGreen, btnColorBlue, btnColorBlack)
 
-btnClearDrawing = pygbutton.PygButton((60, 32 + 240, 100, 40), 'Clear', (60, 60, 60), (0,0,0), pygame.font.Font('freesansbold.ttf', 20))
-btnSendDrawing  = pygbutton.PygButton((60 + 100 + 10, 32 + 240, 100, 40), 'Send', (60, 60, 60), (0,0,0), pygame.font.Font('freesansbold.ttf', 20))
+#btnBrushSize    = pygbutton.PygButton((60           , 10,  40, 40), 'Size', (60, 60, 60), (0,0,0), pygame.font.Font('freesansbold.ttf', 20))
+btnClearDrawing = pygbutton.PygButton((60 +  40 + 10, 8, 100, 35), 'Clear', (100, 100, 100), (0,0,0), pygame.font.Font('freesansbold.ttf', 20))
+btnSendDrawing  = pygbutton.PygButton((60 + 140 + 20, 8, 100, 35), 'Send', (100, 100, 100), (0,0,0), pygame.font.Font('freesansbold.ttf', 20))
 sendButtons     = (btnClearDrawing, btnSendDrawing)
 
 def MainMenu():
@@ -52,12 +53,11 @@ def SendMenu():
     for b in sendButtons:
         b.draw(surface)
     if pygame.mouse.get_pressed()[0]:
-#        print pygame.mouse.get_pos(),  pygame.mouse.get_rel()
-        pygame.draw.line(drawCanvas, drawColor, map(operator.sub, map(operator.add, pygame.mouse.get_pos(), (-60,-10)), pygame.mouse.get_rel()), map(operator.add, pygame.mouse.get_pos(), (-60,-10)), 5)
+        pygame.draw.line(drawCanvas, drawColor, map(operator.sub, map(operator.add, pygame.mouse.get_pos(), (-60,-50)), pygame.mouse.get_rel()), map(operator.add, pygame.mouse.get_pos(), (-60,-50)), 5)
     else:
         pygame.mouse.get_rel()
     pygame.draw.polygon(surface, (196, 196, 196), ((0, (drawSelector * 44) + 15), (20, (drawSelector * 44) + 28), (0, (drawSelector * 44) + 41)))
-    surface.blit(drawCanvas, (60,10))
+    surface.blit(drawCanvas, (60,50))
 
 def ReadMenu():
     print "Reading Menu"
