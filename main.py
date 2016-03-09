@@ -26,6 +26,7 @@ YELLOW  = (255, 255,   0)
 PURPLE  = (255,   0, 255)
 BLACK   = (  0,   0,   0)
 
+drawing = False
 drawColor = BLACK
 drawSelector = 6;
 
@@ -48,14 +49,18 @@ def MainMenu():
         b.draw(surface)
 
 def SendMenu():
+    global drawing
     for b in colorButtons:
         b.draw(surface)
     for b in sendButtons:
         b.draw(surface)
-    if pygame.mouse.get_pressed()[0]:
+    if drawing:
         pygame.draw.line(drawCanvas, drawColor, map(operator.sub, map(operator.add, pygame.mouse.get_pos(), (-60,-50)), pygame.mouse.get_rel()), map(operator.add, pygame.mouse.get_pos(), (-60,-50)), 5)
-    else:
+    if pygame.mouse.get_pressed()[0]:
         pygame.mouse.get_rel()
+        drawing = True
+    else:
+        drawing = False
     pygame.draw.polygon(surface, (196, 196, 196), ((0, (drawSelector * 44) + 15), (20, (drawSelector * 44) + 28), (0, (drawSelector * 44) + 41)))
     surface.blit(drawCanvas, (60,50))
 
