@@ -1,4 +1,4 @@
-import sys, pygame, pygbutton, operator
+import sys, pygame, pygbutton, operator, time
 pygame.init()
 pygame.font.init()
 
@@ -67,6 +67,9 @@ def SendMenu():
 def ReadMenu():
     print "Reading Menu"
 
+def sendEmail():
+    pygame.image.save(drawCanvas, "./drawings/" + str(int(time.time())) + ".png")
+
 while 1:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -100,6 +103,8 @@ while 1:
             if 'click' in btnColorBlack.handleEvent(event):
                 drawSelector = 6
                 drawColor = BLACK
+            if 'click' in btnSend.handleEvent(event):
+                sendEmail()
 
 
     surface.fill((30,30,30))
