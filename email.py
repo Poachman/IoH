@@ -8,8 +8,6 @@ msg['From'] = 'testingpistuffs@gmail.com'
 msg['To'] = 'chrispoach@gmail.com'
 
 for file in pngfiles:
-    # Open the files in binary mode.  Let the MIMEImage class automatically
-    # guess the specific image type.
     fp = open(file, 'rb')
     img = MIMEImage(fp.read())
     fp.close()

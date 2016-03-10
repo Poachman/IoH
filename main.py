@@ -14,8 +14,8 @@ surface     = pygame.display.set_mode(size)
 drawCanvas  = pygame.surface.Surface((410,260))
 drawCanvas.fill(canvasColor)
 
-btnSend = pygbutton.PygButton((10,10,width-20,100), 'Send Message', (100,100,100), (0,0,0), pygame.font.Font('freesansbold.ttf', 30))
-btnRead = pygbutton.PygButton((10,10 + 110,width-20,100), 'Read Messages', (100,100,100), (0,0,0), pygame.font.Font('freesansbold.ttf', 30))
+btnSend = pygbutton.PygButton((10, 10      , width-20, 100), 'Send Message', (100,100,100), (0,0,0), pygame.font.Font('freesansbold.ttf', 30))
+btnRead = pygbutton.PygButton((10, 10 + 110, width-20, 100), 'Read Messages', (100,100,100), (0,0,0), pygame.font.Font('freesansbold.ttf', 30))
 mainMenuButtons = (btnSend, btnRead)
 
 BLUE    = (  0,   0, 255)
