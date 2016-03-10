@@ -1,10 +1,12 @@
-import sys, pygame, pygbutton, operator, time
+import sys, pygame, pygbutton, operator, time, mail
 pygame.init()
 pygame.font.init()
 
 pygame.display.set_caption("Project Internet of Hearts")
 
 size = width, height = 480, 320
+
+mailer = mail.mail()
 
 view = 1  #which screen we're at
 
@@ -68,7 +70,10 @@ def ReadMenu():
     print "Reading Menu"
 
 def sendEmail():
-    pygame.image.save(drawCanvas, "./drawings/" + str(int(time.time())) + ".png")
+    filename = "./drawings/" + str(int(time.time())) + ".png"
+    pygame.image.save(drawCanvas, filename)
+    mailer.sendImage(filename)
+    view = 1
 
 while 1:
     for event in pygame.event.get():
