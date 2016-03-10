@@ -43,8 +43,9 @@ colorButtons    = (btnColorPurple, btnColorYellow, btnColorCyan, btnColorRed, bt
 
 #btnBrushSize    = pygbutton.PygButton((60           , 10,  40, 40), 'Size', (60, 60, 60), (0,0,0), pygame.font.Font('freesansbold.ttf', 20))
 btnClearDrawing = pygbutton.PygButton((60 +  40 + 10, 8, 100, 35), 'Clear', (100, 100, 100), (0,0,0), pygame.font.Font('freesansbold.ttf', 20))
-btnSendDrawing  = pygbutton.PygButton((60 + 140 + 20, 8, 100, 35), 'Send', (100, 100, 100), (0,0,0), pygame.font.Font('freesansbold.ttf', 20))
-sendButtons     = (btnClearDrawing, btnSendDrawing)
+btnBack         = pygbutton.PygButton((60 + 140 + 20, 8, 100, 35), 'Back', (100, 100, 100), (0,0,0), pygame.font.Font('freesansbold.ttf', 20))
+btnSendDrawing  = pygbutton.PygButton((60 + 240 + 30, 8, 100, 35), 'Send', (100, 100, 100), (0,0,0), pygame.font.Font('freesansbold.ttf', 20))
+sendButtons     = (btnClearDrawing, btnSendDrawing, btnBack)
 
 def MainMenu():
     for b in mainMenuButtons:
@@ -70,6 +71,8 @@ def ReadMenu():
     print "Reading Menu"
 
 def sendEmail():
+    print 'Sending...'
+    global view
     filename = "./drawings/" + str(int(time.time())) + ".png"
     pygame.image.save(drawCanvas, filename)
     mailer.sendImage(filename)
@@ -108,7 +111,11 @@ while 1:
             if 'click' in btnColorBlack.handleEvent(event):
                 drawSelector = 6
                 drawColor = BLACK
-            if 'click' in btnSend.handleEvent(event):
+            if 'click' in btnBack.handleEvent(event):
+                view = 1
+                drawCanvas.fill(canvasColor)
+            if 'click' in btnSendDrawing.handleEvent(event):
+                print 'called'
                 sendEmail()
 
 
