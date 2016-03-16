@@ -1,4 +1,4 @@
-import smtplib, ConfigParser, poplib, email, os
+import smtplib, ConfigParser, poplib, email, os, json
 from email.MIMEMultipart import MIMEMultipart
 from email.MIMEText import MIMEText
 from email.MIMEBase import MIMEBase
@@ -52,6 +52,9 @@ class mail(object):
         msg_list = self.connection.list()
         print(msg_list)
 
+        with open('messages.json') as jsonFile:
+            jsonData = json.load(jsonFile)
+
         # messages processing
         for i in range(emails):
 
@@ -76,10 +79,14 @@ class mail(object):
                 if not(filename): filename = "test.txt"
                 print(filename)
 
+                jsonData.append(filename)
+
                 fp = open(os.path.join(self.savedir, filename), 'wb')
                 fp.write(part.get_payload(decode=1))
                 fp.close
 
-        #I  exit here instead of pop3lib quit to make sure the message doesn't get removed in gmail
-        import sys
-        sys.exit(0)
+            with open('messages.json', 'w') as outfile:
+                json.dump(jsonData, outfile)
+
+        self.connection.quit()
+        return emails

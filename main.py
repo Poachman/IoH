@@ -1,4 +1,4 @@
-import sys, pygame, pygbutton, operator, time, mail
+import sys, pygame, pygbutton, operator, time, mail, json
 pygame.init()
 pygame.font.init()
 
@@ -9,6 +9,7 @@ size = width, height = 480, 320
 mailer = mail.mail()
 
 view = 1  #which screen we're at
+jsonData = []
 
 canvasColor = (255,255,255)
 
@@ -75,7 +76,13 @@ def ReadMenu():
         b.draw(surface)
 
 def getMail():
+    global unreadMail, jsonData
     mailer.checkMail()
+    with open('messages.json') as jsonFile:
+        jsonData = json.load(jsonFile)
+        unreadMail = len(jsonData)
+    print("Unread Mail: " + str(unreadMail))
+
 
 def sendEmail():
     print 'Sending...'
@@ -127,6 +134,8 @@ while 1:
         if view == 3: # Read
             if 'click' in btnGetMail.handleEvent(event):
                 getMail()
+            if 'click' in btnBack.handleEvent(event):
+                view = 1
 
 
     surface.fill((30,30,30))
