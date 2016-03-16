@@ -47,6 +47,9 @@ btnBack         = pygbutton.PygButton((60 + 140 + 20, 8, 100, 35), 'Back', (100,
 btnSendDrawing  = pygbutton.PygButton((60 + 240 + 30, 8, 100, 35), 'Send', (100, 100, 100), (0,0,0), pygame.font.Font('freesansbold.ttf', 20))
 sendButtons     = (btnClearDrawing, btnSendDrawing, btnBack)
 
+btnGetMail      = pygbutton.PygButton((60 +  40 + 10, 8, 100, 35), 'Get Mail', (100, 100, 100), (0,0,0), pygame.font.Font('freesansbold.ttf', 20))
+receiveButtons  = (btnGetMail, btnBack)
+
 def MainMenu():
     for b in mainMenuButtons:
         b.draw(surface)
@@ -68,7 +71,11 @@ def SendMenu():
     surface.blit(drawCanvas, (60,50))
 
 def ReadMenu():
-    print "Reading Menu"
+    for b in receiveButtons:
+        b.draw(surface)
+
+def getMail():
+    mailer.checkMail()
 
 def sendEmail():
     print 'Sending...'
@@ -117,6 +124,9 @@ while 1:
             if 'click' in btnSendDrawing.handleEvent(event):
                 print 'called'
                 sendEmail()
+        if view == 3: # Read
+            if 'click' in btnGetMail.handleEvent(event):
+                getMail()
 
 
     surface.fill((30,30,30))

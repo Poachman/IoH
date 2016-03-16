@@ -1,8 +1,9 @@
-import smtplib, ConfigParser
+import smtplib, ConfigParser, poplib, email, os
 from email.MIMEMultipart import MIMEMultipart
 from email.MIMEText import MIMEText
 from email.MIMEBase import MIMEBase
 from email import encoders
+from email import parser
 
 class mail(object):
     def __init__(self):
@@ -30,10 +31,55 @@ class mail(object):
 
         msg.attach(part)
 
-        server = smtplib.SMTP(self.config.get('Email', 'host'), self.config.get('Email', 'port'))
+        server = smtplib.SMTP(self.config.get('Email', 'stmphost'), self.config.get('Email', 'stmpport'))
         server.starttls()
         server.login(self.config.get('Email', 'from'), self.config.get('Email', 'password'))
         text = msg.as_string()
         server.sendmail(self.config.get('Email', 'from'), self.config.get('Email', 'to'), text)
         server.quit()
         return
+
+    def checkMail(self):
+        self.savedir = "./attachments"
+        self.connection = poplib.POP3_SSL(self.config.get('Email', 'pophost'), self.config.get('Email', 'popport'))
+        self.connection.set_debuglevel(1)
+        self.connection.user(self.config.get('Email', 'from'))
+        self.connection.pass_(self.config.get('Email', 'password'))
+
+        emails, total_bytes = self.connection.stat()
+        print("{0} emails in the inbox, {1} bytes total".format(emails, total_bytes))
+        # return in format: (response, ['mesg_num octets', ...], octets)
+        msg_list = self.connection.list()
+        print(msg_list)
+
+        # messages processing
+        for i in range(emails):
+
+            # return in format: (response, ['line', ...], octets)
+            response = self.connection.retr(i+1)
+            raw_message = response[1]
+
+            str_message = email.message_from_string('\n'.join(raw_message))
+
+            # save attach
+            for part in str_message.walk():
+                print(part.get_content_type())
+
+                if part.get_content_maintype() == 'multipart':
+                    continue
+
+                if part.get('Content-Disposition') is None:
+                    print("no content dispo")
+                    continue
+
+                filename = part.get_filename()
+                if not(filename): filename = "test.txt"
+                print(filename)
+
+                fp = open(os.path.join(self.savedir, filename), 'wb')
+                fp.write(part.get_payload(decode=1))
+                fp.close
+
+        #I  exit here instead of pop3lib quit to make sure the message doesn't get removed in gmail
+        import sys
+        sys.exit(0)
