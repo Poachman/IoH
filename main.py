@@ -8,7 +8,7 @@ size = width, height = 480, 320
 
 mailer = mail.mail()
 
-
+timerStarttime = 0
 page = 0
 image = 0
 view = 1  #which screen we're at
@@ -121,8 +121,11 @@ def getMail(dummy=None):
     btnMessages = updateMailButtons()
 
 def checkMail():
+    global timerStarttime
     thread.start_new_thread(getMail, (None, ))
-    threading.Timer(60, checkMail).start()
+    if time.time() > timerStarttime + 60:
+        timerStarttime = time.time()
+        threading.Timer(60, checkMail).start()
 
 def sendEmail():
     global view
@@ -188,7 +191,7 @@ while 1:
                 sendEmail()
         if view == 3: # Read
             if 'click' in btnGetMail.handleEvent(event):
-                getMail()
+                checkMail()
             if 'click' in btnBack.handleEvent(event):
                 view = 1
             if 'click' in btnPrevPage.handleEvent(event):
