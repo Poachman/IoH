@@ -11,7 +11,7 @@ class mail(object):
         self.config = ConfigParser.ConfigParser()
         self.config.read('settings.cfg')
 
-    def sendImage(self, filename):
+    def sendImage(self, directory, filename):
         msg = MIMEMultipart()
 
         msg['From'] = self.config.get('Email', 'from')
@@ -22,7 +22,7 @@ class mail(object):
 
         msg.attach(MIMEText(body, 'plain'))
 
-        attachment = open(filename, "rb")
+        attachment = open(directory + filename, "rb")
 
         part = MIMEBase('application', 'octet-stream')
         part.set_payload((attachment).read())
@@ -42,7 +42,7 @@ class mail(object):
     def checkMail(self):
         self.savedir = "./attachments"
         self.connection = poplib.POP3_SSL(self.config.get('Email', 'pophost'), self.config.get('Email', 'popport'))
-        self.connection.set_debuglevel(1)
+        self.connection.set_debuglevel(0)
         self.connection.user(self.config.get('Email', 'from'))
         self.connection.pass_(self.config.get('Email', 'password'))
 
@@ -50,7 +50,6 @@ class mail(object):
         print("{0} emails in the inbox, {1} bytes total".format(emails, total_bytes))
         # return in format: (response, ['mesg_num octets', ...], octets)
         msg_list = self.connection.list()
-        print(msg_list)
 
         with open('messages.json') as jsonFile:
             jsonData = json.load(jsonFile)
@@ -66,20 +65,17 @@ class mail(object):
 
             # save attach
             for part in str_message.walk():
-                print(part.get_content_type())
 
                 if part.get_content_maintype() == 'multipart':
                     continue
 
                 if part.get('Content-Disposition') is None:
-                    print("no content dispo")
                     continue
 
                 filename = part.get_filename()
                 if not(filename): filename = "test.txt"
-                print(filename)
 
-                jsonData.append(filename)
+                jsonData.insert(0, {"filename":filename, "read":0})
 
                 fp = open(os.path.join(self.savedir, filename), 'wb')
                 fp.write(part.get_payload(decode=1))

@@ -1,4 +1,4 @@
-import sys, pygame, pygbutton, operator, time, mail, json
+import sys, pygame, pygbutton, operator, time, mail, json, os
 pygame.init()
 pygame.font.init()
 
@@ -8,6 +8,9 @@ size = width, height = 480, 320
 
 mailer = mail.mail()
 
+
+global image
+image = 0
 view = 1  #which screen we're at
 jsonData = []
 
@@ -51,9 +54,18 @@ sendButtons     = (btnClearDrawing, btnSendDrawing, btnBack)
 btnGetMail      = pygbutton.PygButton((60 +  40 + 10, 8, 100, 35), 'Get Mail', (100, 100, 100), (0,0,0), pygame.font.Font('freesansbold.ttf', 20))
 receiveButtons  = (btnGetMail, btnBack)
 
+btnReply        = pygbutton.PygButton((60 +  40 + 10, 8, 100, 35), 'Reply', (100, 100, 100), (0,0,0), pygame.font.Font('freesansbold.ttf', 20))
+viewImageButtons = (btnBack, btnReply)
+
+btnMessages     = {}
+
 def MainMenu():
     for b in mainMenuButtons:
         b.draw(surface)
+    if countUnread() > 0:
+        imageNew = pygame.image.load("new.png")
+        imageNew = imageNew.convert_alpha()
+        surface.blit(imageNew, (width-85, 120))
 
 def SendMenu():
     global drawing
@@ -74,24 +86,59 @@ def SendMenu():
 def ReadMenu():
     for b in receiveButtons:
         b.draw(surface)
+    for b in btnMessages:
+        btnMessages[b].draw(surface)
+
+def updateMailButtons():
+    global btnMessages
+    btnMessages = {}
+    imageNew = pygame.image.load("new.png")
+    imageNew = imageNew.convert_alpha()
+    for i, b in enumerate(jsonData):
+        image = pygame.image.load(os.path.join('attachments', b['filename']))
+        image = pygame.transform.scale(image, (225, 125))
+        if b['read'] == 0:
+            image.blit(imageNew, (225-75,0))
+        btn = pygbutton.PygButton(((235 * (i%2)) + 10, (135 * (i/2)) + 50, 225, 125), '', (100, 100, 100), (0,0,0), pygame.font.Font('freesansbold.ttf', 20), image)
+        btnMessages[i] = btn
+
+def countUnread():
+    count = 0
+    for i in jsonData:
+        if i['read'] == 0:
+            count += 1
+    return count
 
 def getMail():
     global unreadMail, jsonData
     mailer.checkMail()
     with open('messages.json') as jsonFile:
         jsonData = json.load(jsonFile)
-        unreadMail = len(jsonData)
-    print("Unread Mail: " + str(unreadMail))
-
+    print("Unread Mail: " + str(countUnread()))
+    updateMailButtons()
 
 def sendEmail():
-    print 'Sending...'
     global view
-    filename = "./drawings/" + str(int(time.time())) + ".png"
-    pygame.image.save(drawCanvas, filename)
-    mailer.sendImage(filename)
+    filename = str(int(time.time())) + ".png"
+    pygame.image.save(drawCanvas, "./drawings/" + filename)
+    mailer.sendImage("./drawings/", filename)
     view = 1
+    drawCanvas.fill(canvasColor)
 
+def ImageView():
+    for b in viewImageButtons:
+        b.draw(surface)
+    if jsonData[image]['read'] == 0:
+        jsonData[image]['read'] = 1
+        updateMailButtons()
+        writeJson()
+    surface.blit(pygame.image.load("./drawings/" + jsonData[image]['filename']), (35,50))
+
+def writeJson():
+    with open('messages.json', 'w') as outfile:
+        json.dump(jsonData, outfile)
+
+getMail()
 while 1:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -129,14 +176,22 @@ while 1:
                 view = 1
                 drawCanvas.fill(canvasColor)
             if 'click' in btnSendDrawing.handleEvent(event):
-                print 'called'
                 sendEmail()
         if view == 3: # Read
             if 'click' in btnGetMail.handleEvent(event):
                 getMail()
             if 'click' in btnBack.handleEvent(event):
                 view = 1
-
+            for k in btnMessages:
+                if 'click' in btnMessages[k].handleEvent(event):
+                    image = k
+                    view = 4
+        if view == 4:
+            if 'click' in btnBack.handleEvent(event):
+                view = 3
+            if 'click' in btnReply.handleEvent(event):
+                view = 2
+                drawCanvas.blit(pygame.image.load("./drawings/" + jsonData[image]['filename']), (0,0))
 
     surface.fill((30,30,30))
 
@@ -147,6 +202,8 @@ while 1:
         SendMenu()
     elif view == 3:
         ReadMenu()
+    elif view == 4:
+        ImageView()
     else:
         view = 1
 
