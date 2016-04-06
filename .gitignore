@@ -2,3 +2,5 @@
 *.png
 settings.cfg
 *.jpg
+messages.json
+!new.png
