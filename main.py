@@ -1,4 +1,4 @@
-import sys, pygame, pygbutton, operator, time, mail, json, os
+import sys, pygame, pygbutton, operator, time, mail, json, os, threading, thread
 pygame.init()
 pygame.font.init()
 
@@ -92,19 +92,18 @@ def ReadMenu():
         btnMessages[b].draw(surface)
 
 def updateMailButtons():
-    global btnMessages
-    btnMessages = {}
+    btns = {}
     imageNew = pygame.image.load("new.png")
     imageNew = imageNew.convert_alpha()
     for i, b in enumerate(jsonData):
         if i >= (page * 4) and i < ((page + 1) * 4):
-            print(i, page)
             image = pygame.image.load(os.path.join('attachments', b['filename']))
             image = pygame.transform.scale(image, (225, 125))
             if b['read'] == 0:
                 image.blit(imageNew, (225-75,0))
             btn = pygbutton.PygButton(((235 * ((i%4)%2)) + 10, (135 * ((i%4)/2)) + 50, 225, 125), '', (100, 100, 100), (0,0,0), pygame.font.Font('freesansbold.ttf', 20), image)
-            btnMessages[i] = btn
+            btns[i] = btn
+    return btns
 
 def countUnread():
     count = 0
@@ -113,13 +112,17 @@ def countUnread():
             count += 1
     return count
 
-def getMail():
-    global unreadMail, jsonData
+def getMail(dummy=None):
+    global unreadMail, jsonData, btnMessages
     mailer.checkMail()
     with open('messages.json') as jsonFile:
         jsonData = json.load(jsonFile)
     print("Unread Mail: " + str(countUnread()))
-    updateMailButtons()
+    btnMessages = updateMailButtons()
+
+def checkMail():
+    thread.start_new_thread(getMail, (None, ))
+    threading.Timer(60, checkMail).start()
 
 def sendEmail():
     global view
@@ -134,7 +137,7 @@ def ImageView():
         b.draw(surface)
     if jsonData[image]['read'] == 0:
         jsonData[image]['read'] = 1
-        updateMailButtons()
+        btnMessages = updateMailButtons()
         writeJson()
     surface.blit(pygame.image.load("./drawings/" + jsonData[image]['filename']), (35,50))
 
@@ -142,7 +145,7 @@ def writeJson():
     with open('messages.json', 'w') as outfile:
         json.dump(jsonData, outfile)
 
-getMail()
+checkMail()
 while 1:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -151,6 +154,7 @@ while 1:
             if 'click' in btnSend.handleEvent(event):
                 view = 2  # Send
             if 'click' in btnRead.handleEvent(event):
+                btnMessages = updateMailButtons()
                 page = 0
                 view = 3  # Read
         if view == 2: # Send
@@ -190,11 +194,11 @@ while 1:
             if 'click' in btnPrevPage.handleEvent(event):
                 if page > 0:
                     page -= 1
-                    updateMailButtons()
+                    btnMessages = updateMailButtons()
             if 'click' in btnNextPage.handleEvent(event):
                 if page < len(jsonData) / 4:
                     page += 1
-                    updateMailButtons()
+                    btnMessages = updateMailButtons()
             for k in btnMessages:
                 if 'click' in btnMessages[k].handleEvent(event):
                     image = k
@@ -202,8 +206,10 @@ while 1:
         if view == 4:
             if 'click' in btnBack.handleEvent(event):
                 view = 3
+                btnMessages = updateMailButtons()
             if 'click' in btnReply.handleEvent(event):
                 view = 2
+                btnMessages = updateMailButtons()
                 drawCanvas.blit(pygame.image.load("./drawings/" + jsonData[image]['filename']), (0,0))
 
     surface.fill((30,30,30))
