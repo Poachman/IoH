@@ -9,7 +9,7 @@ size = width, height = 480, 320
 mailer = mail.mail()
 
 
-global image
+page = 0
 image = 0
 view = 1  #which screen we're at
 jsonData = []
@@ -51,8 +51,10 @@ btnBack         = pygbutton.PygButton((60 + 140 + 20, 8, 100, 35), 'Back', (100,
 btnSendDrawing  = pygbutton.PygButton((60 + 240 + 30, 8, 100, 35), 'Send', (100, 100, 100), (0,0,0), pygame.font.Font('freesansbold.ttf', 20))
 sendButtons     = (btnClearDrawing, btnSendDrawing, btnBack)
 
-btnGetMail      = pygbutton.PygButton((60 +  40 + 10, 8, 100, 35), 'Get Mail', (100, 100, 100), (0,0,0), pygame.font.Font('freesansbold.ttf', 20))
-receiveButtons  = (btnGetMail, btnBack)
+btnGetMail      = pygbutton.PygButton((60 +  40 + 15, 8, 100, 35), 'Get Mail', (100, 100, 100), (0,0,0), pygame.font.Font('freesansbold.ttf', 20))
+btnPrevPage     = pygbutton.PygButton((10, 8, 100, 35), '<<', (100, 100, 100), (0,0,0), pygame.font.Font('freesansbold.ttf', 20))
+btnNextPage     = pygbutton.PygButton((60 +  40 + 225, 8, 100, 35), '>>', (100, 100, 100), (0,0,0), pygame.font.Font('freesansbold.ttf', 20))
+receiveButtons  = (btnGetMail, btnBack, btnPrevPage, btnNextPage)
 
 btnReply        = pygbutton.PygButton((60 +  40 + 10, 8, 100, 35), 'Reply', (100, 100, 100), (0,0,0), pygame.font.Font('freesansbold.ttf', 20))
 viewImageButtons = (btnBack, btnReply)
@@ -95,12 +97,14 @@ def updateMailButtons():
     imageNew = pygame.image.load("new.png")
     imageNew = imageNew.convert_alpha()
     for i, b in enumerate(jsonData):
-        image = pygame.image.load(os.path.join('attachments', b['filename']))
-        image = pygame.transform.scale(image, (225, 125))
-        if b['read'] == 0:
-            image.blit(imageNew, (225-75,0))
-        btn = pygbutton.PygButton(((235 * (i%2)) + 10, (135 * (i/2)) + 50, 225, 125), '', (100, 100, 100), (0,0,0), pygame.font.Font('freesansbold.ttf', 20), image)
-        btnMessages[i] = btn
+        if i >= (page * 4) and i < ((page + 1) * 4):
+            print(i, page)
+            image = pygame.image.load(os.path.join('attachments', b['filename']))
+            image = pygame.transform.scale(image, (225, 125))
+            if b['read'] == 0:
+                image.blit(imageNew, (225-75,0))
+            btn = pygbutton.PygButton(((235 * ((i%4)%2)) + 10, (135 * ((i%4)/2)) + 50, 225, 125), '', (100, 100, 100), (0,0,0), pygame.font.Font('freesansbold.ttf', 20), image)
+            btnMessages[i] = btn
 
 def countUnread():
     count = 0
@@ -147,6 +151,7 @@ while 1:
             if 'click' in btnSend.handleEvent(event):
                 view = 2  # Send
             if 'click' in btnRead.handleEvent(event):
+                page = 0
                 view = 3  # Read
         if view == 2: # Send
             if 'click' in btnClearDrawing.handleEvent(event):
@@ -182,6 +187,14 @@ while 1:
                 getMail()
             if 'click' in btnBack.handleEvent(event):
                 view = 1
+            if 'click' in btnPrevPage.handleEvent(event):
+                if page > 0:
+                    page -= 1
+                    updateMailButtons()
+            if 'click' in btnNextPage.handleEvent(event):
+                if page < len(jsonData) / 4:
+                    page += 1
+                    updateMailButtons()
             for k in btnMessages:
                 if 'click' in btnMessages[k].handleEvent(event):
                     image = k
