@@ -1,4 +1,4 @@
-import sys, pygame, pygbutton, operator, time, mail, json, os, threading, thread
+import sys, pygame, pygbutton, operator, time, mail, json, os, threading, thread, math
 pygame.init()
 pygame.font.init()
 
@@ -90,6 +90,7 @@ def ReadMenu():
         b.draw(surface)
     for b in btnMessages:
         btnMessages[b].draw(surface)
+    surface.blit(pygame.font.Font('freesansbold.ttf', 30).render(str(page+1), True, (200,200,200)), (435, 13))
 
 def updateMailButtons():
     btns = {}
@@ -199,7 +200,7 @@ while 1:
                     page -= 1
                     btnMessages = updateMailButtons()
             if 'click' in btnNextPage.handleEvent(event):
-                if page < len(jsonData) / 4:
+                if page < math.floor(len(jsonData) / 4):
                     page += 1
                     btnMessages = updateMailButtons()
             for k in btnMessages:
