@@ -1,6 +1,9 @@
-import sys, pygame, pygbutton, operator, time, mail, json, os, threading, thread, math
+import sys, pygame, pygbutton, operator, time, mail, json, os, threading, thread, math, ConfigParser
 pygame.init()
 pygame.font.init()
+
+config = ConfigParser.ConfigParser()
+config.read('settings.cfg')
 
 pygame.display.set_caption("Project Internet of Hearts")
 
@@ -16,7 +19,11 @@ jsonData = []
 
 canvasColor = (255,255,255)
 
-surface     = pygame.display.set_mode(size)
+flags = 0
+if(config.get("Env", "fullscreen")):
+    flags = pygame.FULLSCREEN
+
+surface     = pygame.display.set_mode(size, flags)
 drawCanvas  = pygame.surface.Surface((410,260))
 drawCanvas.fill(canvasColor)
 
