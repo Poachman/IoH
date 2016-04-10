@@ -20,7 +20,7 @@ jsonData = []
 canvasColor = (255,255,255)
 
 flags = 0
-if(config.get("Env", "fullscreen")):
+if(config.get("Env", "fullscreen") == True):
     flags = pygame.FULLSCREEN
 
 surface     = pygame.display.set_mode(size, flags)
