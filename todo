@@ -1,5 +1,8 @@
+- Make dirs if not exist
+- Working animation
 - No Magic Numbers
 - List of words
+- Notifications
 - Autoupdate
 ? More colors n' stuff
 ? Wifi network connection selector thing
