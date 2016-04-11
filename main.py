@@ -20,8 +20,8 @@ jsonData = []
 canvasColor = (255,255,255)
 
 flags = 0
-if config.get("Env", "fullscreen") == True:
-    flags = pygame.FULLSCREEN
+if config.get("Env", "fullscreen"):
+    flags = pygame.FULLSCREEN4
 
 surface     = pygame.display.set_mode(size, flags)
 drawCanvas  = pygame.surface.Surface((410,260))
@@ -134,7 +134,7 @@ def checkMail():
     thread.start_new_thread(getMail, (None, ))
     if time.time() > timerStarttime + 60:
         timerStarttime = time.time()
-        threading.Timer(60 * 5, checkMail).start()
+        threading.Timer(config.get("Email", "interval"), checkMail).start()
 
 def sendEmail():
     global view
