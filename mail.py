@@ -41,6 +41,9 @@ class mail(object):
 
     def checkMail(self):
         self.savedir = "./attachments"
+        if os.path.exists(self.savedir) == False:
+            os.mkdir(self.savedir)
+
         self.connection = poplib.POP3_SSL(self.config.get('Email', 'pophost'), self.config.get('Email', 'popport'))
         self.connection.set_debuglevel(0)
         self.connection.user(self.config.get('Email', 'from'))

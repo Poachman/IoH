@@ -139,6 +139,8 @@ def checkMail():
 def sendEmail():
     global view
     filename = str(int(time.time())) + ".png"
+    if os.path.exists("./drawings") == False:
+        os.mkdir("./drawings")
     pygame.image.save(drawCanvas, "./drawings/" + filename)
     mailer.sendImage("./drawings/", filename)
     view = 1
