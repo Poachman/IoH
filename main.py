@@ -20,9 +20,9 @@ jsonData = []
 canvasColor = (255,255,255)
 
 flags = 0
-if config.get("Env", "fullscreen"):
+if config.getboolean('Env', 'fullscreen'):
     flags = pygame.FULLSCREEN
-    pygame.mouse.set_visable(False)
+    pygame.mouse.set_visible(False)
 
 surface     = pygame.display.set_mode(size, flags)
 drawCanvas  = pygame.surface.Surface((410,260))
@@ -131,11 +131,7 @@ def getMail(dummy=None):
     btnMessages = updateMailButtons()
 
 def checkMail():
-    global timerStarttime
     thread.start_new_thread(getMail, (None, ))
-    if time.time() > timerStarttime + 60:
-        timerStarttime = time.time()
-        threading.Timer(config.get("Email", "interval"), checkMail).start()
 
 def sendEmail():
     global view
@@ -160,8 +156,11 @@ def writeJson():
     with open('messages.json', 'w') as outfile:
         json.dump(jsonData, outfile)
 
-checkMail()
 while 1:
+    if time.time() > timerStarttime + (config.getint("Email", "interval")):
+        timerStarttime = time.time()
+        checkMail()
+
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             sys.exit()
