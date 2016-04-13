@@ -22,7 +22,6 @@ canvasColor = (255,255,255)
 flags = 0
 if config.getboolean('Env', 'fullscreen'):
     flags = pygame.FULLSCREEN
-    pygame.mouse.set_visible(False)
 
 surface     = pygame.display.set_mode(size, flags)
 drawCanvas  = pygame.surface.Surface((410,260))
@@ -99,7 +98,8 @@ def ReadMenu():
         b.draw(surface)
     for b in btnMessages:
         btnMessages[b].draw(surface)
-    surface.blit(pygame.font.Font('freesansbold.ttf', 30).render(str(page+1), True, (200,200,200)), (435, 13))
+    pygame.draw.rect(surface, (30,30,30), (395-8,280-8,480,320))
+    surface.blit(pygame.font.Font('freesansbold.ttf', 30).render(str(page+1) + "/" + str(totalPages() + 1), True, (200,200,200)), (395, 280))
 
 def updateMailButtons():
     btns = {}
@@ -155,6 +155,9 @@ def ImageView():
 def writeJson():
     with open('messages.json', 'w') as outfile:
         json.dump(jsonData, outfile)
+
+def totalPages():
+    return int(math.floor((len(jsonData) - 1) / 4))
 
 while 1:
     if time.time() > timerStarttime + (config.getint("Email", "interval")):
@@ -212,7 +215,7 @@ while 1:
                     page -= 1
                     btnMessages = updateMailButtons()
             if 'click' in btnNextPage.handleEvent(event):
-                if page < math.floor(len(jsonData) / 4):
+                if page < totalPages():
                     page += 1
                     btnMessages = updateMailButtons()
             for k in btnMessages:
