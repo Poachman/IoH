@@ -150,7 +150,7 @@ def ImageView():
         jsonData[image]['read'] = 1
         btnMessages = updateMailButtons()
         writeJson()
-    surface.blit(pygame.image.load("./attachments/" + jsonData[image]['filename']), (35,50))
+    surface.blit(pygame.transform.scale(pygame.image.load("./attachments/" + jsonData[image]['filename']), (410, 260)), (35,50))
 
 def writeJson():
     with open('messages.json', 'w') as outfile:
