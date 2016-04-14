@@ -142,12 +142,12 @@ def checkMail():
 
 def sendEmail():
     global view
+    view = 1
     filename = str(int(time.time())) + ".png"
     if os.path.exists("./drawings") == False:
         os.mkdir("./drawings")
     pygame.image.save(drawCanvas, "./drawings/" + filename)
-    mailer.sendImage("./drawings/", filename)
-    view = 1
+    thread.start_new_thread(mailer.sendImage, ("./drawings/", filename))
     drawCanvas.fill(canvasColor)
 
 def ImageView():
