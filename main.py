@@ -30,7 +30,10 @@ drawCanvas.fill(canvasColor)
 btnSend = pygbutton.PygButton((10, 10      , width-20, 100), 'Send Message',  (100,100,100), (0,0,0), pygame.font.Font('freesansbold.ttf', 30))
 btnRead = pygbutton.PygButton((10, 10 + 110, width-20, 100), 'Read Messages', (100,100,100), (0,0,0), pygame.font.Font('freesansbold.ttf', 30))
 btnQuit = pygbutton.PygButton((10, 10 + 220, width-20,  80), 'Quit',          (100,100,100), (0,0,0), pygame.font.Font('freesansbold.ttf', 30))
-mainMenuButtons = (btnSend, btnRead, btnQuit)
+if config.getboolean('Env', 'debug'):
+    mainMenuButtons = (btnSend, btnRead, btnQuit)
+else:
+    mainMenuButtons = (btnSend, btnRead)
 
 BLUE    = (  0,   0, 255)
 RED     = (255,   0,   0)
@@ -59,7 +62,7 @@ btnBack         = pygbutton.PygButton((60 + 140 + 20, 8, 100, 35), 'Back', (100,
 btnSendDrawing  = pygbutton.PygButton((60 + 240 + 30, 8, 100, 35), 'Send', (100, 100, 100), (0,0,0), pygame.font.Font('freesansbold.ttf', 20))
 sendButtons     = (btnClearDrawing, btnSendDrawing, btnBack)
 
-btnGetMail      = pygbutton.PygButton((60 +  40 + 15, 8, 100, 35), 'Get Mail', (100, 100, 100), (0,0,0), pygame.font.Font('freesansbold.ttf', 20))
+btnGetMail      = pygbutton.PygButton((60 +  40 + 15, 8, 100, 35), 'Refresh', (100, 100, 100), (0,0,0), pygame.font.Font('freesansbold.ttf', 20))
 btnPrevPage     = pygbutton.PygButton((10, 8, 100, 35), '<<', (100, 100, 100), (0,0,0), pygame.font.Font('freesansbold.ttf', 20))
 btnNextPage     = pygbutton.PygButton((60 +  40 + 225, 8, 100, 35), '>>', (100, 100, 100), (0,0,0), pygame.font.Font('freesansbold.ttf', 20))
 receiveButtons  = (btnGetMail, btnBack, btnPrevPage, btnNextPage)
@@ -68,6 +71,10 @@ btnReply        = pygbutton.PygButton((60 +  40 + 10, 8, 100, 35), 'Reply', (100
 viewImageButtons = (btnBack, btnReply)
 
 btnMessages     = {}
+
+if not os.path.isfile('messages.json'):
+    with open('messages.json', 'w') as outfile:
+        json.dump([], outfile)
 
 def MainMenu():
     for b in mainMenuButtons:
@@ -175,7 +182,8 @@ while 1:
                 page = 0
                 view = 3  # Read
             if 'click' in btnQuit.handleEvent(event):
-                sys.exit()
+                if config.getboolean('Env', 'debug'):
+                    sys.exit()
         if view == 2: # Send
             if 'click' in btnClearDrawing.handleEvent(event):
                 drawCanvas.fill(canvasColor)
@@ -229,7 +237,7 @@ while 1:
             if 'click' in btnReply.handleEvent(event):
                 view = 2
                 btnMessages = updateMailButtons()
-                drawCanvas.blit(pygame.image.load("./attachments/" + jsonData[image]['filename']), (0,0))
+                drawCanvas.blit(pygame.transform.scale(pygame.image.load("./attachments/" + jsonData[image]['filename']), (410, 260)), (0,0))
 
     surface.fill((30,30,30))
 

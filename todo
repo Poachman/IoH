@@ -1,12 +1,11 @@
-- Make dirs if not exist
 - Working animation
 - No Magic Numbers
 - List of words
 - Notifications
-- Make messages file in not exists
+- Make messages file if not exists
 - Autoupdate
-- scale image on viewing page
 - movies
+- read all
 ? Executable
 ? More colors n' stuff
 ? Wifi network connection selector thing
