@@ -138,6 +138,8 @@ def getMail(dummy=None):
     btnMessages = updateMailButtons()
 
 def checkMail():
+    global timerStarttime
+    timerStarttime = time.time()
     thread.start_new_thread(getMail, (None, ))
 
 def sendEmail():
@@ -217,7 +219,8 @@ while 1:
                 sendEmail()
         if view == 3: # Read
             if 'click' in btnGetMail.handleEvent(event):
-                checkMail()
+                if time.time() > timerStarttime + 10:
+                    checkMail()
             if 'click' in btnBack.handleEvent(event):
                 view = 1
             if 'click' in btnPrevPage.handleEvent(event):
