@@ -174,6 +174,8 @@ while 1:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             sys.exit()
+        if pygame.key.get_focused() and pygame.key.get_pressed()[pygame.K_ESCAPE]:
+            sys.exit()
         if view == 1: # Main Menu
             if 'click' in btnSend.handleEvent(event):
                 view = 2  # Send
